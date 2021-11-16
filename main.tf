@@ -1,5 +1,11 @@
 # Local variables
-locals {}
+locals {
+
+  roles = [
+    "roles/viewer"
+  ]
+
+}
 
 # Creating Service Account
 resource "google_service_account" "autocloud_service_account" {
@@ -16,9 +22,10 @@ resource "google_service_account" "autocloud_service_account" {
 resource "google_project_iam_member" "autocloud_access_role_attachements" {
   for_each = var.enabled != true ? [] : toset(local.roles)
 
-  serviceAccount  = google_service_account.autocloud_service_account[0].email
   project = var.project_id
+  member  = "serviceAccount:${google_service_account.autocloud_service_account[0].email}"
   role    = each.key
+
 }
 
 # Creating Service Account Key
